@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 5,
-            name: 'Peter Stuveysant Cigarettes',
+            name: 'Peter Stuyvesant Cigarettes',
             type: 'Cigarettes',
             price: '3',
             imageUrl: 'PH images/cig1.jpg'
@@ -59,15 +59,43 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 8,
-            name: 'Peter Stuveysant Menthol Cigarettes',
+            name: 'Peter Stuyvesant Menthol',
             type: 'Cigarettes',
-            price: '18.00',
+            price: '3',
             imageUrl: 'PH images/cig1.jpg'
+        },
+        {
+            id: 9,
+            name: 'Metal Grinder',
+            type: 'Accessory',
+            price: '85',
+            imageUrl: 'https://placehold.co/400x400/1a1a1a/eab308?text=Grinder'
+        },
+        {
+            id: 10,
+            name: 'Jet Lighter',
+            type: 'Accessory',
+            price: '120',
+            imageUrl: 'https://placehold.co/400x400/1a1a1a/eab308?text=Lighter'
+        },
+        {
+            id: 11,
+            name: 'Rolling Tray',
+            type: 'Accessory',
+            price: '150',
+            imageUrl: 'https://placehold.co/400x400/1a1a1a/eab308?text=Tray'
+        },
+        {
+            id: 12,
+            name: 'Glass Ash Tray',
+            type: 'Accessory',
+            price: '75',
+            imageUrl: 'https://placehold.co/400x400/1a1a1a/eab308?text=Ash+Tray'
         }
     ];
 
     // --- DOM ELEMENTS ---
-    const productGrid = document.getElementById('product-grid');
+    const productsSection = document.getElementById('products');
     const cartCountElement = document.getElementById('cart-count');
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -85,29 +113,65 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FUNCTIONS ---
 
     /**
-     * Renders product cards into the grid
+     * Renders product cards into their respective category grids
      */
     function renderProducts() {
-        // Ensure productGrid exists before trying to modify it
-        if (!productGrid) return;
-        
-        productGrid.innerHTML = ''; // Clear existing products
-        products.forEach(product => {
-            const card = document.createElement('div');
-            card.className = 'bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300';
-            card.innerHTML = `
-                <div class="relative">
-                    <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-56 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
-                    <div class="absolute inset-0 card-gradient"></div>
-                    <span class="absolute top-3 right-3 bg-amber-500 text-gray-900 text-xs font-semibold px-2 py-1 rounded-full">${product.type}</span>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-bold text-white">${product.name}</h3>
-                    <p class="text-2xl font-semibold text-amber-400 mt-2">ZMK${product.price}</p>
-                    <button data-product-id="${product.id}" class="add-to-cart-btn w-full mt-4 btn-primary">Add to Cart</button>
+        const papersGrid = document.getElementById('papers-grid');
+        const accessoriesContainer = document.getElementById('accessories-scroll-container');
+        const cigarettesGrid = document.getElementById('cigarettes-grid');
+
+        // Ensure all containers exist before proceeding
+        if (!papersGrid || !accessoriesContainer || !cigarettesGrid) {
+            console.error("One or more product containers are missing from the DOM.");
+            return;
+        }
+
+        // Filter products by type
+        const papers = products.filter(p => p.type === 'Papers');
+        const accessories = products.filter(p => p.type === 'Accessory');
+        const cigarettes = products.filter(p => p.type === 'Cigarettes');
+
+        // Clear existing content
+        papersGrid.innerHTML = '';
+        accessoriesContainer.innerHTML = '';
+        cigarettesGrid.innerHTML = '';
+
+        // Helper function to create a product card HTML string
+        const createProductCard = (product, isAccessory = false) => {
+            // Add specific classes for accessory cards to control their size in the flex container
+            const cardClasses = isAccessory 
+                ? 'w-64 sm:w-72 flex-shrink-0' 
+                : '';
+            
+            return `
+                <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300 ${cardClasses}">
+                    <div class="relative">
+                        <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-56 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
+                        <div class="absolute inset-0 card-gradient"></div>
+                        <span class="absolute top-3 right-3 bg-amber-500 text-gray-900 text-xs font-semibold px-2 py-1 rounded-full">${product.type}</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white">${product.name}</h3>
+                        <p class="text-2xl font-semibold text-amber-400 mt-2">ZMK${product.price}</p>
+                        <button data-product-id="${product.id}" class="add-to-cart-btn w-full mt-4 btn-primary">Add to Cart</button>
+                    </div>
                 </div>
             `;
-            productGrid.appendChild(card);
+        };
+
+        // Render papers into their grid
+        papers.forEach(product => {
+            papersGrid.innerHTML += createProductCard(product);
+        });
+
+        // Render accessories into their scrolling container
+        accessories.forEach(product => {
+            accessoriesContainer.innerHTML += createProductCard(product, true);
+        });
+
+        // Render cigarettes into their grid
+        cigarettes.forEach(product => {
+            cigarettesGrid.innerHTML += createProductCard(product);
         });
     }
 
@@ -191,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- EVENT LISTENERS ---
-    if (productGrid) productGrid.addEventListener('click', addToCart);
+    if (productsSection) productsSection.addEventListener('click', addToCart);
     if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMobileMenu);
     if (confirmAgeBtn) confirmAgeBtn.addEventListener('click', confirmAge);
     if (denyAgeBtn) denyAgeBtn.addEventListener('click', denyAge);

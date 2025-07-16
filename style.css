@@ -55,3 +55,12 @@ body {
 .btn-secondary:hover {
     background-color: #4b5563; /* gray-600 */
 }
+
+/* Hides the scrollbar for the horizontal scrolling container */
+.horizontal-scroll-container {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.horizontal-scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
